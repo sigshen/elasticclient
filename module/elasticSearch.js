@@ -15,7 +15,7 @@ ElasticClient.prototype.initIndex = function (indexName) {
 }
 
 ElasticClient.prototype.deleteIndex = function (indexName) {
-  return this.elasticClient.indices.create({
+  return this.elasticClient.indices.delete({
     index: indexName
   })
 }
@@ -53,11 +53,35 @@ ElasticClient.prototype.initMapping = function (indexName, properties) {
   })
 }
 
-ElasticClient.prototype.addDocument = function (indexName, body) {
+ElasticClient.prototype.addDocument = function (indexName, doc) {
   return this.elasticClient.index({
     index: indexName,
     type: 'document',
-    body: body
+    body: {
+      title: doc.title,
+      content: doc.content,
+      suggest: {
+        input: doc.title.split(" "),
+        output: doc.title,
+        payload: doc.metadata || {}
+      }
+    }
+  })
+}
+
+ElasticClient.prototype.getSuggestions = function (indexName, input) {
+  return this.elasticClient.suggest({
+    index: indexName,
+    type: 'document',
+    body: {
+      docsuggest: {
+        text: input,
+        completion: {
+          field: 'suggest',
+          fuzzy: true
+        }
+      }
+    }
   })
 }
 
