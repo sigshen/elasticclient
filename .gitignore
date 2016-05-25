@@ -1,0 +1,10 @@
+node_modules
+dump
+.tmp
+.*swp
+*.log
+*.zip
+*.pyc
+.sass-cache
+app/bower_components
+mongo_backup/*
